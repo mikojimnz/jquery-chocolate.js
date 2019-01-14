@@ -1,11 +1,12 @@
 (function ($) {
+	'use strict';
 
 	$.fn.chocolate = function (args) {
 
 		// Default Options
 		var options = $.extend({
 			interval: 6000,
-			speed: 2000
+			speed: 1500
 		}, args);
 
 		return this.each(function () {
@@ -17,13 +18,14 @@
 					images[i] = new Image();
 					images[i].addEventListener("load", function () {});
 					images[i].src = args.path + i + '.jpg';
+					console.log("Preloaded image #" + i);
 				}
 			});
 
 			var original = $(this);
 
 			// Create element
-			$div = $(document.createElement('div'));
+			var $div = $(document.createElement('div'));
 			$div.css({
 				position: 'absolute',
 				zIndex: 0,
@@ -39,7 +41,7 @@
 			original.css('background', 'none');
 
 			// Clone bg element
-			$div2 = $div.clone();
+			var $div2 = $div.clone();
 			$div.after($div2);
 
 			// Set postion
@@ -80,7 +82,7 @@
 					};
 
 				for (; i < corners.length; i++) {
-					corner = corners[i];
+					var corner = corners[i];
 					copyStyle['margin' + corner] = original.css('margin' + corner);
 					copyStyle['border' + corner] = original.css('border' + corner);
 				}
@@ -96,7 +98,7 @@
 				var r = Math.floor(Math.random() * maximg) + 1;
 
 				while (true) {
-					if (nums.indexOf(r) == -1) {
+					if (nums.indexOf(r) === -1) {
 						break;
 					} else {
 						r = Math.floor(Math.random() * maximg) + 1;
@@ -115,17 +117,28 @@
 			// Change background function
 			var slide = function () {
 				var current = randomInt();
+				
+				$div.css(copyPosition());
+				$div2.css(copyPosition());
 
 				if (count === 1) {
-					$div2.fadeOut(options.speed);
-					$div.css('background-image', 'url(' + args.path + current + '.jpg)').fadeIn(options.speed);
+					$div2.animate({
+						opacity: 0
+					}, options.speed);
+					$div.css('background-image', 'url(' + args.path + current + '.jpg)').animate({
+						opacity: 1
+					}, options.speed);
 					count++;
 				} else {
-					$div.fadeOut(options.speed);
-					$div2.css('background-image', 'url(' + args.path + current + '.jpg)').fadeIn(options.speed);
+					$div.animate({
+						opacity: 0
+					}, options.speed);
+					$div2.css('background-image', 'url(' + args.path + current + '.jpg)').animate({
+						opacity: 1
+					}, options.speed);
 					count = 1;
 				}
-			}
+			};
 
 			setInterval(function () {
 				slide();
